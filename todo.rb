@@ -37,7 +37,12 @@ class TodoList
   end
 
   def add(item)
-    item.class == Todo ? todos << item ?  "Can only add Todo objects"
+    item.class == Todo ? todos << item : "Can only add Todo objects"
+    todos
+  end
+
+  def <<(item)
+    item.class == Todo ? todos << item : "Can only add Todo objects"
     todos
   end
 end
@@ -52,4 +57,6 @@ list = TodoList.new("Today's Todos")
 
 list.add(todo1)
 list.add(3)
-list.add(todo2)
+list << todo2
+
+p list
