@@ -10,7 +10,6 @@ class Todo
     @done = false
   end
 
-
   def done!
       self.done = true
   end
@@ -36,15 +35,66 @@ class TodoList
     @todos = []
   end
 
-  def add(item)
-    item.class == Todo ? todos << item : "Can only add Todo objects"
-    todos
+  def size
+    @todos.size
   end
 
-  def <<(item)
-    item.class == Todo ? todos << item : "Can only add Todo objects"
-    todos
+  def add(item)
+    raise TypeError, "can only add Todo objects" unless item.instance_of? Todo
+    todos << item
   end
+
+def <<(item)
+    raise TypeError, "can only add Todo objects" unless item.instance_of? Todo
+    todos << item
+  end
+  def item_at(index)
+    todos.fetch(index)
+  end
+
+  def mark_done_at(index)
+    item_at(index).done!
+  end
+
+  def mark_done_at(index)
+    item_at(index).undone!
+  end
+
+  def first
+    todos.first
+  end
+
+  def last
+    todos.last
+  end
+
+  def shift
+    todos.shift
+  end
+
+  def pop
+    todos.pop
+  end
+
+  def done?
+    todos.all? { |item| item.done? }
+  end
+
+  def done!
+    @todos.each_index do |index|
+      mark_done_at(index)
+    end
+  end
+
+  def remove_at(index)
+    todos.delete(item_at(index))
+  end
+
+  def to_s
+    text = "----- #{title} -----\n"
+    todos.each { |item| puts item }
+  end
+
 end
 
 
@@ -56,7 +106,8 @@ todo3 = Todo.new("Go to gym")
 list = TodoList.new("Today's Todos")
 
 list.add(todo1)
-list.add(3)
-list << todo2
+list.add(todo2)
+list.add(todo3)
 
-p list
+puts list
+
