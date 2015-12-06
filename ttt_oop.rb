@@ -1,13 +1,13 @@
 require "pry"
 
 class Board
-  WINNING_LINES = [[1,2,3], [4,5,6], [7,8,9], 
-                  [1,4,7], [2,5,8], [3,6,9], 
-                  [1,5,9], [3,5,7]]
+  WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] + # rows
+                  [[1, 4, 7], [2, 5, 8], [3, 6, 9]] + # cols
+                  [[1, 5, 9], [3, 5, 7]]  #diagonals
 
   def initialize
     @squares = {}
-    (1..9).each { |key| @squares[key] = Square.new}
+    reset
   end
 
   def get_square_at(key)
@@ -41,14 +41,19 @@ class Board
   # returns winning marker or nil
   def detect_winner
     WINNING_LINES.each do |line|
-      if count_human_marker(@squares.select{ |k,_| line.include?(k)}.values) == 3
+      if count_human_marker(@squares.values_at(*line)) == 3
         return Game::HUMAN_MARKER
-      elsif count_computer_marker(@squares.select{ |k,_| line.include?(k)}.values) == 3
+      elsif count_computer_marker(@squares.values_at(*line)) == 3
         return Game::COMPUTER_MARKER
-      end
-     return nil
-   end
+       end
+    end
+    return nil
   end
+
+  def reset
+    (1..9).each { |key| @squares[key] = Square.new}
+  end
+
 end
 
 class Square
@@ -93,8 +98,8 @@ class Game
     puts "Thanks for playing, goodbye."
   end
 
-  def display_board
-    system "clear"
+  def display_board(clear = true)
+    system "clear" if clear
     puts "You're an #{human.marker}" 
     puts "Computer is an #{computer.marker}"
     puts "  #{board.get_square_at(1)}  |  #{board.get_square_at(2)}  |  #{board.get_square_at(3)}  "
@@ -126,24 +131,42 @@ class Game
       when human.marker
         puts "You won!"
       when computer.marker
-        puts "Computer one"
+        puts "Computer won"
       else
         puts "It's a tie"
       end
   end
 
+  def play_again?
+    answer = nil
+    loop do
+      puts "Would you like to play again? (Y/N)"
+      answer = gets.chomp.downcase
+      break if %w(y n =).include? answer
+      puts "Sorry, must be y or n."
+    end
+    answer == 'y'
+  end
+
   def play
     display_welcome_message
-      display_board
+    system 'clear'
     loop do
-      human_moves
-      break if board.someone_won? || board.full?
-      computer_moves
-      break if board.someone_won? || board.full?
-      display_board
-      break if board.someone_won? || board.full?
-    end 
-    display_result
+        display_board(false)
+      loop do
+        human_moves
+        break if board.someone_won? || board.full?
+        computer_moves
+        break if board.someone_won? || board.full?
+        display_board
+      end 
+      display_result
+      break unless play_again?
+      board.reset
+      system 'clear'
+      puts "Let's play again!"
+      puts ""
+    end
     display_goodbye_message
   end
 end
