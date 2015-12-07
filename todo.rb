@@ -11,7 +11,7 @@ class Todo
   end
 
   def done!
-      self.done = true
+    self.done = true
   end
 
   def done?
@@ -44,10 +44,11 @@ class TodoList
     todos << item
   end
 
-def <<(item)
+  def <<(item)
     raise TypeError, "can only add Todo objects" unless item.instance_of? Todo
     todos << item
   end
+
   def item_at(index)
     todos.fetch(index)
   end
@@ -56,7 +57,7 @@ def <<(item)
     item_at(index).done!
   end
 
-  def mark_done_at(index)
+  def mark_undone_at(index)
     item_at(index).undone!
   end
 
@@ -76,6 +77,10 @@ def <<(item)
     todos.pop
   end
 
+  def to_a
+    @todos
+  end
+
   def done?
     todos.all? { |item| item.done? }
   end
@@ -91,8 +96,9 @@ def <<(item)
   end
 
   def to_s
-    text = "----- #{title} -----\n"
-    todos.each { |item| puts item }
+    text = "---- #{title} ----\n"
+    text << @todos.map(&:to_s).join("\n")
+    text
   end
 
   def each
@@ -105,14 +111,11 @@ def <<(item)
   end
 
   def select
-    counter = 0
-    result = TodoList.new("New List")
-
-    while counter < @todos.length
-      result << todos[counter] if yield(todos[counter])
-      counter += 1
+    list = TodoList.new(title)
+    each do |todo|
+      list.add(todo) if yield(todo)
     end
-    result
+    list
   end
 
 
@@ -153,6 +156,6 @@ list.add(todo1)
 list.add(todo2)
 list.add(todo3)
 
-p list.mark_done("Buy mil")
+p list.mark_done_at(0)
 p list
 
