@@ -95,6 +95,15 @@ def <<(item)
     todos.each { |item| puts item }
   end
 
+  def each
+    counter = 0
+
+    while counter < @todos.length
+      yield(todos[counter])
+      counter += 1
+    end
+  end
+
 end
 
 
@@ -109,5 +118,5 @@ list.add(todo1)
 list.add(todo2)
 list.add(todo3)
 
-puts list
+list.each {|todo| puts "Item: #{todo}"}
 
