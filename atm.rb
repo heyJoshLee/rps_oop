@@ -1,3 +1,4 @@
+require 'pry'
 class Atm
   attr_accessor :current_msg
 
@@ -82,6 +83,17 @@ class Atm
 
     new_account = Account.new(first_name_input, last_name_input, initial_deposit, Account.new_account_number)
     puts "Your account number is #{new_account.number}"
+    sleep(2)
+    puts "Please write your account number down."
+    sleep(2)
+    puts "You may now log in."
+    sleep(2)
+    puts "You will be redirected to log in in 5 seconds"
+    sleep(5)
+    binding.pry
+
+    operate
+
   end
 
   def prompt_for_user_number
@@ -101,13 +113,15 @@ end
 
 class Account
   @@accounts = []
-  attr_accessor :first_name, :last_name, :deposit, :number
+  attr_accessor :first_name, :last_name, :balance, :number
 
   def initialize(first_name, last_name, deposit, number)
     @first_name = first_name
     @last_name = last_name
-    @deposit = deposit
+    @balance = deposit.to_i
     @number = number
+
+    @@accounts << self
   end
 
   def self.new_account_number
@@ -117,6 +131,16 @@ class Account
       break unless @@accounts.include?(new_account_num)
     end
     new_account_num
+  end
+
+  def self.all
+    @@accounts
+  end
+
+  def self.total_deposits
+    sum = 0
+    all.each { |acc| sum += acc.balance}
+    sum
   end
 
 end
