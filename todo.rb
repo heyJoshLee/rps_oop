@@ -97,11 +97,22 @@ def <<(item)
 
   def each
     counter = 0
-
     while counter < @todos.length
       yield(todos[counter])
       counter += 1
     end
+    self
+  end
+
+  def select
+    counter = 0
+    result = TodoList.new("New List")
+
+    while counter < @todos.length
+      result << todos[counter] if yield(todos[counter])
+      counter += 1
+    end
+    result
   end
 
 end
@@ -118,5 +129,5 @@ list.add(todo1)
 list.add(todo2)
 list.add(todo3)
 
-list.each {|todo| puts "Item: #{todo}"}
+p list.each {|todo| puts todo}
 
